@@ -29,6 +29,10 @@ class AttributeValidator(type):
             if attr not in dct:
                 raise ValueError(f"Відсутній атрибут: {attr}")
 
+        for attr in cls.required_attribute:
+            if not callable(attr):
+                raise TypeError(f"Атрибут {attr} не може бути методом")
+
         return super().__new__(cls, name, bases, dct)
 
 
@@ -71,17 +75,24 @@ print(AutoRegister.registry)
 # Завдання 3
 
 class BaseClass1:
-    pass
+    def print(self):
+        print("Hello!!!")
 
 
 class BaseClass2:
-    pass
+    def print(self):
+        print("Hellooo!!!")
 
 
 class InheritanceController(type):
-    forbidden_bases = (BaseClass1, BaseClass2)
+    forbidden_bases = (BaseClass2, BaseClass1)
 
     def __new__(cls, name, bases, dct):
+        if len(bases) > 1:
+            first_print_method = getattr(bases[0], "print", None)
+            if first_print_method:
+                print(f"Першим буде викликано метод `print` з класу `{bases[0].__name__}`")
+
         for base in bases:
             if base in cls.forbidden_bases:
                 raise TypeError(f"Спадкування від {base.__name__} заборонено")
