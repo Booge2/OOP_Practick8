@@ -29,8 +29,7 @@ class AttributeValidator(type):
             if attr not in dct:
                 raise ValueError(f"Відсутній атрибут: {attr}")
 
-        for attr in cls.required_attribute:
-            if not callable(attr):
+            if not callable(dct):
                 raise TypeError(f"Атрибут {attr} не може бути методом")
 
         return super().__new__(cls, name, bases, dct)
